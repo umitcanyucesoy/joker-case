@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: MapData
   m_EditorClassIdentifier: Assembly-CSharp::Core.Data.MapData
   GridJson: {fileID: 4900000, guid: 1694b839dc274856ab7c86fbb79631a2, type: 3}
-  TilePrefab: {fileID: 29774416140591190, guid: cccbbbe4dcf31488f9bdb407dd3e67c6, type: 3}
+  TilePrefab: {fileID: 6472360248169070770, guid: 66a62386a665442a68a09ee7c63d1bdc, type: 3}
   TileSpacing: 1.03

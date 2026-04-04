@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Core.Data;
 using UnityEngine;
@@ -9,11 +8,12 @@ namespace Core.Grid
     public class GridService : IGridService
     {
         private readonly Dictionary<Vector2Int, Tile> _tiles = new();
+        private float _tileSpacing;
 
         public int Rows { get; private set; }
         public int Columns { get; private set; }
 
-        public void BuildGrid(MapData mapData)
+        public void BuildGrid(MapData mapData, Transform tileRoot)
         {
             ClearGrid();
 
@@ -27,20 +27,17 @@ namespace Core.Grid
 
             Rows = map.rows;
             Columns = map.columns;
-            var tileSpacing = mapData.TileSpacing;
-
-            var offsetX = (Columns - 1) * tileSpacing * 0.5f;
-            var offsetY = (Rows - 1) * tileSpacing * 0.5f;
+            _tileSpacing = mapData.TileSpacing;
 
             foreach (var cellData in map.cells)
             {
                 var worldPosition = new Vector3(
-                    -cellData.x * tileSpacing,  
-                    0f,                        
-                    cellData.y * tileSpacing
+                    -cellData.x * _tileSpacing,
+                    0f,
+                    cellData.y * _tileSpacing
                 );
 
-                var tile = Object.Instantiate(mapData.TilePrefab, worldPosition, Quaternion.identity);
+                var tile = Object.Instantiate(mapData.TilePrefab, worldPosition, Quaternion.identity, tileRoot);
                 tile.Init(cellData);
 
                 var coord = new Vector2Int(cellData.x, cellData.y);
@@ -49,7 +46,24 @@ namespace Core.Grid
 
             Debug.Log($"[GridService] Grid built: {Columns}x{Rows}, total tiles: {_tiles.Count}");
         }
-        
+
+        public bool TryGetTileWorldPosition(Vector2Int coord, out Vector3 worldPosition)
+        {
+            if (_tiles.TryGetValue(coord, out var tile))
+            {
+                worldPosition = tile.transform.position;
+                return true;
+            }
+
+            worldPosition = Vector3.zero;
+            return false;
+        }
+
+        public bool TryGetTile(Vector2Int coord, out Tile tile)
+        {
+            return _tiles.TryGetValue(coord, out tile);
+        }
+
         private void ClearGrid()
         {
             foreach (var kvp in _tiles)
