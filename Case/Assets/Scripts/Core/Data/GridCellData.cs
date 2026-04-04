@@ -1,4 +1,5 @@
 using System;
+using Core.Enums;
 
 namespace Core.Data
 {
@@ -7,5 +8,7 @@ namespace Core.Data
     {
         public int x;
         public int y;
+        public TileType tileType; 
+        public int count;
     }
 }

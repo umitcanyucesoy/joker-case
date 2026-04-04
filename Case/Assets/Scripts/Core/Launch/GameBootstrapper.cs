@@ -9,8 +9,9 @@ namespace Core.Launch
 {
     public class GameBootstrapper : MonoBehaviour
     {
-        [Header("Level Configuration")]
+        [Header("Map Configuration")]
         [SerializeField] private MapData currentMapData;
+        [SerializeField] private TileTypeRegistry tileTypeRegistry;
 
         [Header("Controllers")]
         [SerializeField] private TokenController tokenController;
@@ -42,6 +43,7 @@ namespace Core.Launch
 
         private void StartGame()
         {
+            _gridService.SetTypeRegistry(tileTypeRegistry);
             _gridService.BuildGrid(currentMapData, tileRoot);
             tokenController.Initialize();
             uiController.Init(_tokenController);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core.Data;
+using Core.Enums;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,6 +9,7 @@ namespace Core.Grid
     public class GridService : IGridService
     {
         private readonly Dictionary<Vector2Int, Tile> _tiles = new();
+        private TileTypeRegistry _typeRegistry;
         private float _tileSpacing;
 
         public int Rows { get; private set; }
@@ -38,13 +40,25 @@ namespace Core.Grid
                 );
 
                 var tile = Object.Instantiate(mapData.TilePrefab, worldPosition, Quaternion.identity, tileRoot);
-                tile.Init(cellData);
+                
+                TileTypeData typeData = null;
+                if (cellData.tileType != TileType.None)
+                    _typeRegistry.TryGetType(cellData.tileType, out typeData);
+                
+
+                tile.Init(cellData, typeData);
 
                 var coord = new Vector2Int(cellData.x, cellData.y);
                 _tiles[coord] = tile;
             }
 
             Debug.Log($"[GridService] Grid built: {Columns}x{Rows}, total tiles: {_tiles.Count}");
+        }
+        
+        public void SetTypeRegistry(TileTypeRegistry registry)
+        {
+            _typeRegistry = registry;
+            _typeRegistry.Initialize();
         }
 
         public bool TryGetTileWorldPosition(Vector2Int coord, out Vector3 worldPosition)
