@@ -34,6 +34,10 @@ namespace Core.Dice
             _isRolling = true;
             _stoppedTime = 0f;
 
+            var targetRotation = _diceData.GetRotationForFace(_targetValue);
+            Vector3 localTargetFaceDir = Quaternion.Inverse(targetRotation) * Vector3.up;
+    
+            rb.centerOfMass = -localTargetFaceDir * 0.4f; 
             SetInitialRotationForTarget(_targetValue);
 
             rb.isKinematic = false;
@@ -47,7 +51,7 @@ namespace Core.Dice
                 Random.Range(-1f, 1f),
                 Random.Range(-1f, 1f)
             ).normalized * torqueForce;
-            
+    
             rb.AddTorque(randomTorque, ForceMode.Impulse);
             StartCoroutine(WaitForStop());
         }
@@ -77,12 +81,16 @@ namespace Core.Dice
                 if (velocity < _stopVelocityThreshold && angularVelocity < _stopVelocityThreshold)
                 {
                     _stoppedTime += Time.deltaTime;
-                    
+            
                     if (_stoppedTime >= _stopDuration)
                     {
-                        SnapToTargetValue();
+                        rb.isKinematic = true;
+                        rb.linearVelocity = Vector3.zero;
+                        rb.angularVelocity = Vector3.zero;
+
                         _isRolling = false;
                         CurrentFaceValue = _targetValue;
+                
                         EventBus.Publish(new DiceStoppedEvent
                         {
                             InstanceId = InstanceId,
@@ -97,33 +105,6 @@ namespace Core.Dice
 
                 yield return null;
             }
-        }
-
-        private void SnapToTargetValue()
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-
-            var targetRotation = _diceData.GetRotationForFace(_targetValue);
-            StartCoroutine(SmoothSnapRotation(targetRotation, 0.2f));
-        }
-
-        private IEnumerator SmoothSnapRotation(Quaternion targetRotation, float duration)
-        {
-            rb.isKinematic = true;
-            
-            var startRotation = transform.rotation;
-            var elapsed = 0f;
-
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-                var t = elapsed / duration;
-                transform.rotation = Quaternion.Slerp(startRotation, targetRotation, t);
-                yield return null;
-            }
-
-            transform.rotation = targetRotation;
         }
 
         public void ResetDice()

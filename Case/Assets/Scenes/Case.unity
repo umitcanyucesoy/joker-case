@@ -164,7 +164,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Core.Dice.DiceController
   diceData: {fileID: 11400000, guid: 91918baafff2e450ba1115b73857ff04, type: 2}
-  mainCamera: {fileID: 330585545}
+  mainCamera: {fileID: 1589723862}
   groundHeight: 0.25
   spawnOffset: {x: 0, y: 5, z: 1}
 --- !u!1 &213939109
@@ -746,7 +746,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 522477722}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 797e8cdc164ac42e6a37b621861e0989, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -827,7 +827,7 @@ Transform:
   m_GameObject: {fileID: 522477722}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.09, z: 0}
+  m_LocalPosition: {x: 0, y: 0.05, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children: []
