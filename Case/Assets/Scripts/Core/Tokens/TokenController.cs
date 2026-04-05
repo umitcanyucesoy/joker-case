@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Core.Camera;
 using Core.Data;
 using Core.Grid;
-using EventBus;
+using Event;
 using Service;
 using UnityEngine;
 
@@ -31,12 +31,12 @@ namespace Core.Tokens
 
         private void OnEnable()
         {
-            EventBus.EventBus.Subscribe<TokenMoveCompletedEvent>(OnTokenMoveCompleted);
+           EventBus.Subscribe<TokenMoveCompletedEvent>(OnTokenMoveCompleted);
         }
 
         private void OnDisable()
         {
-            EventBus.EventBus.Unsubscribe<TokenMoveCompletedEvent>(OnTokenMoveCompleted);
+            EventBus.Unsubscribe<TokenMoveCompletedEvent>(OnTokenMoveCompleted);
         }
 
         public void Initialize(ICameraController cameraController)

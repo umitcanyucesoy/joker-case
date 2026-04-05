@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fa4d1c021f84cccae68dfce7f80e39d, type: 3}
+  m_Name: DiceData
+  m_EditorClassIdentifier: Assembly-CSharp::Core.Dice.DiceData
+  dicePrefab: {fileID: 3944226298980730973, guid: ab08b7ac962734dd0846fbe2835fca07, type: 3}
+  faceRotations:
+  - faceValue: 1
+    eulerAngles: {x: 0, y: 0, z: 0}
+  - faceValue: 2
+    eulerAngles: {x: 0, y: 0, z: 90}
+  - faceValue: 3
+    eulerAngles: {x: 90, y: 0, z: 0}
+  - faceValue: 4
+    eulerAngles: {x: -90, y: 0, z: 0}
+  - faceValue: 5
+    eulerAngles: {x: 0, y: 0, z: -90}
+  - faceValue: 6
+    eulerAngles: {x: 180, y: 0, z: 0}
+  throwForce: 3.5
+  torqueForce: 0.15
+  upwardAngle: 0.358
+  delayBetweenDice: 0.1
+  stopVelocityThreshold: 0.1
+  stopDuration: 0.05

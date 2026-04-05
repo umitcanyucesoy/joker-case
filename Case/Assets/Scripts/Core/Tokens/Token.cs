@@ -1,5 +1,6 @@
 using System.Collections;
 using Core.Data;
+using Event;
 using UnityEngine;
 
 namespace Core.Tokens
@@ -43,7 +44,7 @@ namespace Core.Tokens
             currentCoord = targetCoord;
             isMoving = false;
 
-            EventBus.EventBus.Publish(new EventBus.TokenMoveCompletedEvent
+            EventBus.Publish(new TokenMoveCompletedEvent
             {
                 Token = this,
                 Coord = targetCoord

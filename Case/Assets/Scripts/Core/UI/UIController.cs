@@ -1,5 +1,6 @@
-
+using Core.Dice;
 using Core.Tokens;
+using Event;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,14 +15,32 @@ namespace Core.UI
         [SerializeField] private Button rollButton;
         
         private ITokenController _tokenController;
+        private IDiceController _diceController;
 
-        public void Init(ITokenController tokenController)
+        private void OnEnable()
+        {
+            EventBus.Subscribe<DiceRollCompletedEvent>(OnDiceRollCompleted);
+        }
+
+        private void OnDisable()
+        {
+            EventBus.Unsubscribe<DiceRollCompletedEvent>(OnDiceRollCompleted);
+        }
+
+        public void Init(ITokenController tokenController, IDiceController diceController)
         {
             _tokenController = tokenController;
+            _diceController = diceController;
         }
         
         public void OnRollClicked()
         {
+            if (_diceController.IsRolling)
+            {
+                Debug.LogWarning("[UIController] Dice are already rolling.");
+                return;
+            }
+
             if (!int.TryParse(dice1Input.text, out var dice1) || dice1 < 1 || dice1 > 6)
             {
                 Debug.LogWarning("[UIController] Dice 1 invalid (1-6)");
@@ -34,10 +53,14 @@ namespace Core.UI
                 return;
             }
 
-            var totalSteps = dice1 + dice2;
-            Debug.Log($"[UIController] Rolling: {dice1} + {dice2} = {totalSteps}");
+            Debug.Log($"[UIController] Throwing dice: {dice1}, {dice2}");
+            _diceController.ThrowDice(dice1, dice2);
+        }
 
-            _tokenController.MoveActiveTokenBySteps(totalSteps);
+        private void OnDiceRollCompleted(DiceRollCompletedEvent evt)
+        {
+            Debug.Log($"[UIController] Dice roll complete: {evt.Dice1Value} + {evt.Dice2Value} = {evt.TotalValue}");
+            _tokenController.MoveActiveTokenBySteps(evt.TotalValue);
         }
     }
 }

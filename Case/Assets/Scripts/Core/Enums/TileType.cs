@@ -7,4 +7,5 @@ namespace Core.Enums
         Apple = 2,
         Pear = 3 
     }
+    
 }

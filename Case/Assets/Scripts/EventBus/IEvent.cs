@@ -1,4 +1,4 @@
-namespace EventBus
+namespace Event
 {
     public interface IEvent { }
 }
