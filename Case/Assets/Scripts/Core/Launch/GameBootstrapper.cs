@@ -1,3 +1,4 @@
+using Core.Camera;
 using Core.Data;
 using Core.Grid;
 using Core.Tokens;
@@ -16,12 +17,14 @@ namespace Core.Launch
         [Header("Controllers")]
         [SerializeField] private TokenController tokenController;
         [SerializeField] private UIController uiController;
+        [SerializeField] private CameraController cameraController;
         
         [Header("Roots")]
         [SerializeField] private Transform tileRoot;
 
         private IGridService _gridService;
         private ITokenController _tokenController;
+        private ICameraController _cameraController;
 
         private void Awake()
         {
@@ -39,13 +42,14 @@ namespace Core.Launch
             ServiceLocator.Register(_gridService);
 
             _tokenController = tokenController;
+            _cameraController = cameraController;
         }
 
         private void StartGame()
         {
             _gridService.SetTypeRegistry(tileTypeRegistry);
             _gridService.BuildGrid(currentMapData, tileRoot);
-            tokenController.Initialize();
+            tokenController.Initialize(_cameraController);
             uiController.Init(_tokenController);
         }
     }

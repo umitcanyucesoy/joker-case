@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Core.Camera;
 using Core.Data;
 using Core.Grid;
 using EventBus;
@@ -24,6 +25,7 @@ namespace Core.Tokens
         private readonly Dictionary<Vector2Int, Token> _tokenPositions = new();
         private readonly List<Token> _allTokens = new();
         private IGridService _gridService;
+        private ICameraController _cameraController;
         private Token _activeToken;
         private bool _isMoving;
 
@@ -37,12 +39,15 @@ namespace Core.Tokens
             EventBus.EventBus.Unsubscribe<TokenMoveCompletedEvent>(OnTokenMoveCompleted);
         }
 
-        public void Initialize()
+        public void Initialize(ICameraController cameraController)
         {
             _gridService = ServiceLocator.Get<IGridService>();
+            _cameraController = cameraController;
             
             foreach (var config in tokensToSpawn) SpawnToken(config.tokenData, config.startCoord);
             if (_allTokens.Count > 0) _activeToken = _allTokens[0];
+            
+            _cameraController.SetFollowTarget( _activeToken.transform);
         }
 
         public void SpawnToken(TokenData tokenData, Vector2Int startCoord)
