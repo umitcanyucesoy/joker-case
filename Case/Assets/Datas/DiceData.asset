@@ -26,9 +26,9 @@ MonoBehaviour:
     eulerAngles: {x: 0, y: 0, z: -90}
   - faceValue: 6
     eulerAngles: {x: 180, y: 0, z: 0}
-  throwForce: 3.5
-  torqueForce: 0.15
+  throwForce: 12.5
+  torqueForce: 0.35
   upwardAngle: 0.358
-  delayBetweenDice: 0.1
-  stopVelocityThreshold: 0.1
-  stopDuration: 0.05
+  delayBetweenDice: 0.2
+  stopVelocityThreshold: 0.2
+  stopDuration: 0.1
