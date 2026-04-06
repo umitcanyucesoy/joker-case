@@ -47,7 +47,7 @@ namespace Core.Tokens
             foreach (var config in tokensToSpawn) SpawnToken(config.tokenData, config.startCoord);
             if (_allTokens.Count > 0) _activeToken = _allTokens[0];
             
-            _cameraController.SetFollowTarget( _activeToken.transform);
+            _cameraController.SetFollowTarget(_activeToken.transform);
         }
 
         public void SpawnToken(TokenData tokenData, Vector2Int startCoord)
@@ -82,7 +82,7 @@ namespace Core.Tokens
                 token.MoveTo(worldPos, nextCoord);
 
                 yield return new WaitUntil(() => !token.isMoving);
-                yield return new WaitForSeconds(0.1f); 
+                yield return new WaitForSeconds(token.tokenData.stepDelay); 
 
                 currentCoord = nextCoord;
             }
