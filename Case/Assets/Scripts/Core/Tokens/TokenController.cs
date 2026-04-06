@@ -76,6 +76,22 @@ namespace Core.Tokens
             {
                 var nextCoord = GetNextCoord(currentCoord);
                 
+                if (IsLastTile(currentCoord))
+                {
+                    var startCoord = new Vector2Int(0, 0);
+                    if (_gridService.TryGetTileWorldPosition(startCoord, out var startPos))
+                    {
+                        _tokenPositions.Remove(currentCoord);
+                        token.LapBounceTo(startPos, startCoord);
+                        
+                        yield return new WaitUntil(() => !token.isMoving);
+                        yield return new WaitForSeconds(token.tokenData.stepDelay);
+                        
+                        currentCoord = startCoord;
+                        continue;
+                    }
+                }
+                
                 if (!_gridService.TryGetTileWorldPosition(nextCoord, out var worldPos)) break;
 
                 _tokenPositions.Remove(currentCoord);
@@ -88,6 +104,16 @@ namespace Core.Tokens
             }
 
             _isMoving = false;
+        }
+
+        private bool IsLastTile(Vector2Int coord)
+        {
+            var maxRow = _gridService.Rows - 1;
+            var isEvenRow = maxRow % 2 == 0;
+            
+            if (coord.y != maxRow) return false;
+            
+            return isEvenRow ? coord.x == _gridService.Columns - 1 : coord.x == 0;
         }
 
         private Vector2Int GetNextCoord(Vector2Int current)

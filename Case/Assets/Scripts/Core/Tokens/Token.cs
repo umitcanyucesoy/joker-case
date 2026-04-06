@@ -27,6 +27,11 @@ namespace Core.Tokens
         {
             StartCoroutine(MoveCoroutine(targetPosition, targetCoord));
         }
+
+        public void LapBounceTo(Vector3 targetPosition, Vector2Int targetCoord)
+        {
+            StartCoroutine(LapBounceCoroutine(targetPosition, targetCoord));
+        }
         
         private IEnumerator MoveCoroutine(Vector3 targetPosition, Vector2Int targetCoord)
         {
@@ -41,7 +46,6 @@ namespace Core.Tokens
                 elapsed += Time.deltaTime;
                 var t = Mathf.Clamp01(elapsed / duration);
                 
-                // Yatay hareket (moveCurve ile)
                 var moveT = tokenData.moveCurve.Evaluate(t);
                 var horizontalPos = Vector3.Lerp(start, target, moveT);
                 
@@ -59,6 +63,40 @@ namespace Core.Tokens
             {
                 Token = this,
                 Coord = targetCoord
+            });
+        }
+
+        private IEnumerator LapBounceCoroutine(Vector3 targetPosition, Vector2Int targetCoord)
+        {
+            isMoving = true;
+            var target = targetPosition + Vector3.up * tokenData.heightOffset;
+            var start = transform.position;
+            var elapsed = 0f;
+            var duration = tokenData.lapBounceDuration;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                var t = Mathf.Clamp01(elapsed / duration);
+                
+                var moveT = tokenData.lapMoveCurve.Evaluate(t);
+                var horizontalPos = Vector3.Lerp(start, target, moveT);
+                
+                var bounceOffset = tokenData.lapBounceCurve.Evaluate(t) * tokenData.lapBounceHeight;
+                
+                transform.position = horizontalPos + Vector3.up * bounceOffset;
+                yield return null;
+            }
+
+            transform.position = target;
+            currentCoord = targetCoord;
+            isMoving = false;
+
+            EventBus.Publish(new TokenMoveCompletedEvent
+            {
+                Token = this,
+                Coord = targetCoord,
+                IsLapComplete = true
             });
         }
     }

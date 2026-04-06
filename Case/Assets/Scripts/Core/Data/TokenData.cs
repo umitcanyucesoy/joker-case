@@ -28,5 +28,20 @@ namespace Core.Data
             new Keyframe(1f, 1f, 0f, 0f)
         );
         public float stepDelay = 0.05f;
+        
+        [Header("Lap Bounce Animation Settings")]
+        public float lapBounceHeight = 2f;
+        public float lapBounceDuration = 0.8f;
+        public AnimationCurve lapBounceCurve = new(
+            new Keyframe(0f, 0f, 0f, 1f),   
+            new Keyframe(0.6f, 1f, 1f, 0f),    
+            new Keyframe(0.85f, 0.2f, -4f, -4f),
+            new Keyframe(1f, 0f, -0.5f, 0f)     
+        );
+        public AnimationCurve lapMoveCurve = new(
+            new Keyframe(0f, 0f, 0f, 0.5f),    
+            new Keyframe(0.6f, 0.3f, 0.5f, 2f), 
+            new Keyframe(1f, 1f, 1.5f, 0f)      
+        );
     }
 }

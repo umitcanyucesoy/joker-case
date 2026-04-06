@@ -7,6 +7,7 @@ namespace Event
     {
         public Token Token;
         public Vector2Int Coord;
+        public bool IsLapComplete;
     }
 
     public struct DiceStoppedEvent : IEvent
