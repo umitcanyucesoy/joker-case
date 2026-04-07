@@ -35,12 +35,6 @@ namespace Core.UI
         
         public void OnRollClicked()
         {
-            if (_diceController.IsRolling)
-            {
-                Debug.LogWarning("[UIController] Dice are already rolling.");
-                return;
-            }
-
             if (!int.TryParse(dice1Input.text, out var dice1) || dice1 < 1 || dice1 > 6)
             {
                 Debug.LogWarning("[UIController] Dice 1 invalid (1-6)");
@@ -54,7 +48,7 @@ namespace Core.UI
             }
 
             Debug.Log($"[UIController] Throwing dice: {dice1}, {dice2}");
-            _diceController.ThrowDice(dice1, dice2);
+            _diceController.RollDice(dice1, dice2);
         }
 
         private void OnDiceRollCompleted(DiceRollCompletedEvent evt)

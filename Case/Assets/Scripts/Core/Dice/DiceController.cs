@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Core.Pool;
 using Event;
+using Service;
 using Unity.Cinemachine;
 using UnityEngine;
 
@@ -8,20 +10,25 @@ namespace Core.Dice
 {
     public class DiceController : MonoBehaviour, IDiceController
     {
-        [Header("References")]
+        [Header("Configuration")]
         [SerializeField] private DiceData diceData;
         [SerializeField] private CinemachineCamera mainCamera;
-
+        
         [Header("Spawn Settings")]
-        [SerializeField] private float groundHeight = 0.5f;
-        [SerializeField] private Vector3 spawnOffset = new Vector3(0f, 0f, 1f);
+        [SerializeField] private float spawnHeight = 0.5f;
+        [SerializeField] private float spawnForwardOffset = 2f;
+        [SerializeField] private float diceSpacing = 0.5f;
 
         private readonly List<DiceBehaviour> _activeDice = new();
-        private bool _isRolling;
-        private int _diceStoppedCount;
-        private int _totalResult;
+        private IPoolService _poolService;
+        
+        private int _diceInstanceCounter;
+        private int _stoppedDiceCount;
+        private int _expectedDiceCount;
+        private int _dice1Value;
+        private int _dice2Value;
 
-        public bool IsRolling => _isRolling;
+        private IPoolService PoolService => _poolService ??= ServiceLocator.Get<IPoolService>();
 
         private void OnEnable()
         {
@@ -33,105 +40,78 @@ namespace Core.Dice
             EventBus.Unsubscribe<DiceStoppedEvent>(OnDiceStopped);
         }
 
-        public void ThrowDice(int dice1Value, int dice2Value)
+        public void RollDice(int dice1Value, int dice2Value)
         {
-            if (_isRolling)
-            {
-                Debug.LogWarning("[DiceController] Dice are already rolling.");
-                return;
-            }
+            ClearDice();
 
-            StartCoroutine(ThrowDiceSequence(dice1Value, dice2Value));
+            _dice1Value = dice1Value;
+            _dice2Value = dice2Value;
+            _stoppedDiceCount = 0;
+            _expectedDiceCount = 2;
+
+            StartCoroutine(RollSequence(dice1Value, dice2Value));
         }
 
-        private IEnumerator ThrowDiceSequence(int dice1Value, int dice2Value)
+        private IEnumerator RollSequence(int dice1Value, int dice2Value)
         {
-            _isRolling = true;
-            _diceStoppedCount = 0;
-            _totalResult = 0;
-
-            CleanupDice();
-            
-            var spawnBase = GetSpawnPosition();
-            var dice1 = SpawnAndThrowDice(spawnBase, dice1Value, 0);
-            _activeDice.Add(dice1);
-
+            SpawnAndThrowDice(dice1Value, -diceSpacing * 0.5f);
             yield return new WaitForSeconds(diceData.delayBetweenDice);
-
-            var dice2 = SpawnAndThrowDice(spawnBase, dice2Value, 1);
-            _activeDice.Add(dice2);
-
-            yield return new WaitUntil(() => _diceStoppedCount >= 2);
-
-            EventBus.Publish(new DiceRollCompletedEvent
-            {
-                Dice1Value = dice1.CurrentFaceValue,
-                Dice2Value = dice2.CurrentFaceValue,
-                TotalValue = _totalResult
-            });
-
-            _isRolling = false;
+            SpawnAndThrowDice(dice2Value, diceSpacing * 0.5f);
         }
 
-        private Vector3 GetSpawnPosition()
+        private void SpawnAndThrowDice(int targetValue, float horizontalOffset)
         {
             var camTransform = mainCamera.transform;
-            var camPos = camTransform.position;
             
-            var flatForward = camTransform.forward;
-            flatForward.y = 0;
-            flatForward.Normalize();
+            var camForwardFlat = camTransform.forward;
+            camForwardFlat.y = 0f;
+            camForwardFlat.Normalize();
             
-            var flatRight = camTransform.right;
-            flatRight.y = 0;
-            flatRight.Normalize();
-
-            var spawnPos = new Vector3(camPos.x, groundHeight, camPos.z) + flatRight * spawnOffset.x + flatForward * spawnOffset.z;
-            return spawnPos;
-        }
-
-        private DiceBehaviour SpawnAndThrowDice(Vector3 basePosition, int targetValue, int diceIndex)
-        {
-            var offset = new Vector3(
-                Random.Range(-0.3f, 0.3f),
-                diceIndex * 0.2f, 
-                Random.Range(-0.3f, 0.3f)
-            );
+            var camRightFlat = camTransform.right;
+            camRightFlat.y = 0f;
+            camRightFlat.Normalize();
             
-            var spawnPosition = basePosition + offset;
-            
-            var dice = Instantiate(diceData.dicePrefab, spawnPosition, Quaternion.identity);
-            dice.Init(diceData, diceIndex);
+            var spawnPos = camTransform.position + camForwardFlat * spawnForwardOffset;
+            spawnPos.y = spawnHeight;
+            spawnPos += camRightFlat * horizontalOffset;
 
-            var camTransform = mainCamera.transform;
-            var throwDirection = camTransform.forward;
-            throwDirection.y = 0; 
-            throwDirection.Normalize();
-            throwDirection.y = diceData.upwardAngle;
+            var dice = PoolService.Get(diceData.dicePrefab, spawnPos, Quaternion.identity);
+            dice.Init(diceData, _diceInstanceCounter++);
+            _activeDice.Add(dice);
 
-            dice.Throw(throwDirection, diceData.throwForce, diceData.torqueForce, targetValue);
-
-            return dice;
+            var throwDirection = (camForwardFlat + Vector3.up * 0.3f).normalized;
+            dice.Throw(throwDirection, targetValue);
         }
 
         private void OnDiceStopped(DiceStoppedEvent evt)
         {
-            _diceStoppedCount++;
-            _totalResult += evt.FaceValue;
+            _stoppedDiceCount++;
+
+            if (_stoppedDiceCount >= _expectedDiceCount)
+            {
+                EventBus.Publish(new DiceRollCompletedEvent
+                {
+                    Dice1Value = _dice1Value,
+                    Dice2Value = _dice2Value,
+                    TotalValue = _dice1Value + _dice2Value
+                });
+            }
         }
 
-        private void CleanupDice()
+        private void ClearDice()
         {
             foreach (var dice in _activeDice)
             {
-                if (dice != null)
-                    Destroy(dice.gameObject);
+                if (dice)
+                {
+                    dice.ResetDice();
+                    PoolService.Return(diceData.dicePrefab, dice);
+                }
             }
             _activeDice.Clear();
         }
     }
 }
-
 
 
 

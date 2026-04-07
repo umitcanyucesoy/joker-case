@@ -38,12 +38,5 @@ namespace Core.Grid
             currentCount = newCount;
             typeRenderer?.UpdateCount(newCount);
         }
-
-        public void ClearType()
-        {
-            currentType = null;
-            currentCount = 0;
-            typeRenderer?.Hide();
-        }
     }
 }

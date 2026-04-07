@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Core.Camera;
 using Core.Data;
+using Core.Enums;
 using Core.Grid;
 using Event;
 using Service;
@@ -104,6 +105,20 @@ namespace Core.Tokens
             }
 
             _isMoving = false;
+            CollectItemOnTile(currentCoord);
+        }
+
+        private void CollectItemOnTile(Vector2Int coord)
+        {
+            if (!_gridService.TryGetTile(coord, out var tile)) return;
+            if (!tile.currentType || tile.currentType.tileType == TileType.None || tile.currentCount <= 0) return;
+
+            EventBus.Publish(new ItemCollectedEvent
+            {
+                ItemType = tile.currentType.tileType,
+                TypeData = tile.currentType,
+                Count = tile.currentCount
+            });
         }
 
         private bool IsLastTile(Vector2Int coord)

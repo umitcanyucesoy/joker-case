@@ -63,7 +63,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2308696317614740640}
   - component: {fileID: 8839263218715082386}
-  - component: {fileID: 3944226298980730973}
+  - component: {fileID: 1878231578640296469}
   m_Layer: 0
   m_Name: Dice
   m_TagString: Untagged
@@ -96,9 +96,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5382120242108000669}
   serializedVersion: 5
-  m_Mass: 2
-  m_LinearDamping: 0.5
-  m_AngularDamping: 0.1
+  m_Mass: 0.3
+  m_LinearDamping: 2
+  m_AngularDamping: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -115,7 +115,7 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 2
---- !u!114 &3944226298980730973
+--- !u!114 &1878231578640296469
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5382120242108000669}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b38826b8d3b949db97a1dfe1d21f7f1, type: 3}
+  m_Script: {fileID: 11500000, guid: d0394ed4cf8242b08ba407dc3170e59e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Core.Dice.DiceBehaviour
   rb: {fileID: 8839263218715082386}

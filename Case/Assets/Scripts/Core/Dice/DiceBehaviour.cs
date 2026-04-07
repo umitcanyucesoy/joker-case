@@ -1,21 +1,18 @@
 using System.Collections;
 using Event;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Core.Dice
 {
     [RequireComponent(typeof(Rigidbody))]
     public class DiceBehaviour : MonoBehaviour
     {
-        public Rigidbody rb;
+        [SerializeField] private Rigidbody rb;
         
         private DiceData _diceData;
         private int _targetValue;
-        private bool _isRolling;
-        private float _stoppedTime;
-        private float _stopVelocityThreshold;
-        private float _stopDuration;
+        private Quaternion _targetRotation;
+        private Vector3 _rollAxis;
 
         public int CurrentFaceValue { get; private set; }
         public int InstanceId { get; private set; }
@@ -23,100 +20,88 @@ namespace Core.Dice
         public void Init(DiceData diceData, int instanceId)
         {
             _diceData = diceData;
-            _stopVelocityThreshold = diceData.stopVelocityThreshold;
-            _stopDuration = diceData.stopDuration;
             InstanceId = instanceId;
         }
 
-        public void Throw(Vector3 direction, float force, float torqueForce, int targetValue)
+        public void Throw(Vector3 direction, int targetValue)
         {
             _targetValue = Mathf.Clamp(targetValue, 1, 6);
-            _isRolling = true;
-            _stoppedTime = 0f;
+            _targetRotation = _diceData.GetRotationForFace(_targetValue);
+            
+            _rollAxis = Vector3.Cross(Vector3.up, direction).normalized;
 
-            var targetRotation = _diceData.GetRotationForFace(_targetValue);
-            Vector3 localTargetFaceDir = Quaternion.Inverse(targetRotation) * Vector3.up;
-    
-            rb.centerOfMass = -localTargetFaceDir * 0.4f; 
-            SetInitialRotationForTarget(_targetValue);
-
+            transform.rotation = _targetRotation;
             rb.isKinematic = false;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
 
-            rb.AddForce(direction.normalized * force, ForceMode.Impulse);
-
-            var randomTorque = new Vector3(
-                Random.Range(-1f, 1f),
-                Random.Range(-1f, 1f),
-                Random.Range(-1f, 1f)
-            ).normalized * torqueForce;
-    
-            rb.AddTorque(randomTorque, ForceMode.Impulse);
-            StartCoroutine(WaitForStop());
+            rb.AddForce(direction.normalized * _diceData.throwForce, ForceMode.Impulse);
+            StartCoroutine(RollCoroutine());
         }
 
-        private void SetInitialRotationForTarget(int targetValue)
+        private IEnumerator RollCoroutine()
         {
-            var baseRotation = _diceData.GetRotationForFace(targetValue);
-            
-            var randomOffset = Quaternion.Euler(
-               Random.Range(-10f, 10f),
-               Random.Range(-10f, 10f),
-               Random.Range(-10f, 10f)
-            );
-            
-            transform.rotation = randomOffset * baseRotation;
-        }
+            var rollStartTime = Time.time;
+            var targetTotalRotation = 360f * _diceData.rollCount;
 
-        private IEnumerator WaitForStop()
-        {
-            yield return new WaitForSeconds(0.5f);
-
-            while (_isRolling)
+            while (true)
             {
-                var velocity = rb.linearVelocity.magnitude;
-                var angularVelocity = rb.angularVelocity.magnitude;
-
-                if (velocity < _stopVelocityThreshold && angularVelocity < _stopVelocityThreshold)
-                {
-                    _stoppedTime += Time.deltaTime;
-            
-                    if (_stoppedTime >= _stopDuration)
-                    {
-                        rb.isKinematic = true;
-                        rb.linearVelocity = Vector3.zero;
-                        rb.angularVelocity = Vector3.zero;
-
-                        _isRolling = false;
-                        CurrentFaceValue = _targetValue;
+                var elapsed = Time.time - rollStartTime;
+                var t = elapsed / _diceData.rollDuration;
                 
-                        EventBus.Publish(new DiceStoppedEvent
-                        {
-                            InstanceId = InstanceId,
-                            FaceValue = _targetValue
-                        });
-                    }
-                }
-                else
-                {
-                    _stoppedTime = 0f;
-                }
-
+                if (t >= 1f) break;
+                
+                var easedT = 1f - Mathf.Pow(1f - t, 3f);
+                var currentAngle = easedT * targetTotalRotation;
+                
+                transform.rotation = Quaternion.AngleAxis(currentAngle, _rollAxis) * _targetRotation;
                 yield return null;
             }
+
+            transform.rotation = _targetRotation;
+
+            while (rb.linearVelocity.magnitude > 0.1f)
+                yield return null;
+            
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.isKinematic = true;
+            
+            CurrentFaceValue = _targetValue;
+
+            EventBus.Publish(new DiceStoppedEvent
+            {
+                InstanceId = InstanceId,
+                FaceValue = _targetValue
+            });
+        }
+
+        private void FixedUpdate()
+        {
+            if (!rb.isKinematic) rb.angularVelocity = Vector3.zero;
         }
 
         public void ResetDice()
         {
             StopAllCoroutines();
-            _isRolling = false;
-            _stoppedTime = 0f;
             CurrentFaceValue = 0;
+            
+            if (!rb.isKinematic)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+            }
             rb.isKinematic = true;
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
         }
     }
 }
+
+
+
+
+
+
+
+
+
 

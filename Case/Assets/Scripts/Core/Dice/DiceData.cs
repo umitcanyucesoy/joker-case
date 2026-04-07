@@ -19,25 +19,25 @@ namespace Core.Dice
         [Header("Face Rotations")]
         public FaceRotation[] faceRotations = 
         {
-            new() { faceValue = 1, eulerAngles = new Vector3(-90, 0, 0) },
-            new() { faceValue = 2, eulerAngles = new Vector3(0, 0, 90) },
-            new() { faceValue = 3, eulerAngles = new Vector3(0, 0, 0) },
-            new() { faceValue = 4, eulerAngles = new Vector3(180, 0, 0) },
-            new() { faceValue = 5, eulerAngles = new Vector3(0, 0, -90) },
-            new() { faceValue = 6, eulerAngles = new Vector3(90, 0, 0) }
+            new() { faceValue = 1, eulerAngles = new Vector3(-90f, 0f, 0f) },
+            new() { faceValue = 2, eulerAngles = new Vector3(0f, 0f, 90f) },
+            new() { faceValue = 3, eulerAngles = new Vector3(0f, 0f, 0f) },
+            new() { faceValue = 4, eulerAngles = new Vector3(180f, 0f, 0f) },
+            new() { faceValue = 5, eulerAngles = new Vector3(0f, 0f, -90f) },
+            new() { faceValue = 6, eulerAngles = new Vector3(90f, 0f, 0f) }
         };
 
         [Header("Throw Settings")]
-        public float throwForce = 6f;
-        public float torqueForce = 4f;
-        [Range(0f, 0.5f)] public float upwardAngle = 0.1f;
-
+        public float throwForce = 8f;
+        
+        [Header("Roll Animation")]
+        public int rollCount = 2;
+        public float rollDuration = 0.6f;
+        
         [Header("Timing")]
-        public float delayBetweenDice = 0.2f;
-        [Header("Detection Settings")]
-        public float stopVelocityThreshold = 0.1f;
-        public float stopDuration = 0.3f;
-
+        public float delayBetweenDice = 0.15f;
+        public float snapDuration = 0.1f;
+        
         public Quaternion GetRotationForFace(int faceValue)
         {
             foreach (var face in faceRotations)
@@ -51,7 +51,6 @@ namespace Core.Dice
         }
     }
 }
-
 
 
 

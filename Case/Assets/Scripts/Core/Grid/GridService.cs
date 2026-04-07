@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Core.Data;
 using Core.Enums;
+using Core.Pool;
+using Service;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Core.Grid
 {
@@ -10,6 +11,8 @@ namespace Core.Grid
     {
         private readonly Dictionary<Vector2Int, Tile> _tiles = new();
         private TileTypeRegistry _typeRegistry;
+        private IPoolService _poolService;
+        private Tile _tilePrefab;
         private float _tileSpacing;
 
         public int Rows { get; private set; }
@@ -18,6 +21,9 @@ namespace Core.Grid
         public void BuildGrid(MapData mapData, Transform tileRoot)
         {
             ClearGrid();
+            
+            _poolService = ServiceLocator.Get<IPoolService>();
+            _tilePrefab = mapData.TilePrefab;
 
             var map = mapData.ParseGrid();
 
@@ -39,7 +45,7 @@ namespace Core.Grid
                     cellData.y * _tileSpacing
                 );
 
-                var tile = Object.Instantiate(mapData.TilePrefab, worldPosition, Quaternion.identity, tileRoot);
+                var tile = _poolService.Get(_tilePrefab, worldPosition, Quaternion.identity, tileRoot);
                 
                 TileTypeData typeData = null;
                 if (cellData.tileType != TileType.None)
@@ -80,9 +86,22 @@ namespace Core.Grid
 
         private void ClearGrid()
         {
-            foreach (var kvp in _tiles)
-                if (kvp.Value && kvp.Value.gameObject)
-                    Object.Destroy(kvp.Value.gameObject);
+            if (_poolService != null && _tilePrefab)
+            {
+                foreach (var kvp in _tiles)
+                {
+                    if (kvp.Value && kvp.Value.gameObject)
+                        _poolService.Return(_tilePrefab, kvp.Value);
+                }
+            }
+            else
+            {
+                foreach (var kvp in _tiles)
+                {
+                    if (kvp.Value && kvp.Value.gameObject)
+                        Object.Destroy(kvp.Value.gameObject);
+                }
+            }
 
             _tiles.Clear();
             Rows = 0;

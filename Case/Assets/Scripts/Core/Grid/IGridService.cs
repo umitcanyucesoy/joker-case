@@ -6,10 +6,11 @@ namespace Core.Grid
 {
     public interface IGridService : IService
     {
-        public int Columns { get; }
-        public int Rows { get; }
-        public void BuildGrid(MapData mapData, Transform tileRoot);
-        public bool TryGetTileWorldPosition(Vector2Int coord, out Vector3 worldPosition);
-        public void SetTypeRegistry(TileTypeRegistry registry);
+        int Columns { get; }
+        int Rows { get; }
+        void BuildGrid(MapData mapData, Transform tileRoot);
+        bool TryGetTileWorldPosition(Vector2Int coord, out Vector3 worldPosition);
+        bool TryGetTile(Vector2Int coord, out Tile tile);
+        void SetTypeRegistry(TileTypeRegistry registry);
     }
 }

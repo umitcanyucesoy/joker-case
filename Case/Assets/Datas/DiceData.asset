@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fa4d1c021f84cccae68dfce7f80e39d, type: 3}
+  m_Script: {fileID: 11500000, guid: c805546548e34d69846576ab58b74fff, type: 3}
   m_Name: DiceData
   m_EditorClassIdentifier: Assembly-CSharp::Core.Dice.DiceData
-  dicePrefab: {fileID: 3944226298980730973, guid: ab08b7ac962734dd0846fbe2835fca07, type: 3}
+  dicePrefab: {fileID: 1878231578640296469, guid: ab08b7ac962734dd0846fbe2835fca07, type: 3}
   faceRotations:
   - faceValue: 1
     eulerAngles: {x: 0, y: 0, z: 0}
@@ -26,9 +26,8 @@ MonoBehaviour:
     eulerAngles: {x: 0, y: 0, z: -90}
   - faceValue: 6
     eulerAngles: {x: 180, y: 0, z: 0}
-  throwForce: 12.5
-  torqueForce: 0.35
-  upwardAngle: 0.358
-  delayBetweenDice: 0.2
-  stopVelocityThreshold: 0.2
-  stopDuration: 0.1
+  throwForce: 3
+  rollCount: 3
+  rollDuration: 0.6
+  delayBetweenDice: 0.15
+  snapDuration: 0.1
