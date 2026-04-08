@@ -37,11 +37,6 @@ namespace Core.Pool
             return go.GetComponent<T>();
         }
 
-        public GameObject Get(GameObject prefab, Vector3 position, Quaternion rotation, Transform parent = null)
-        {
-            return GetInternal(prefab, position, rotation, parent);
-        }
-
         public void Return<T>(T prefab, T instance) where T : Component
         {
             ReturnInternal(prefab.gameObject, instance.gameObject);
@@ -62,50 +57,6 @@ namespace Core.Pool
                 var instance = Object.Instantiate(prefab, GetPoolParent(key));
                 instance.gameObject.SetActive(false);
                 _pools[key].Enqueue(instance.gameObject);
-            }
-        }
-
-        public void ClearAll()
-        {
-            foreach (var pool in _pools.Values)
-            {
-                while (pool.Count > 0)
-                {
-                    var obj = pool.Dequeue();
-                    if (obj != null)
-                        Object.Destroy(obj);
-                }
-            }
-            _pools.Clear();
-
-            foreach (var parent in _poolParents.Values)
-            {
-                if (parent != null)
-                    Object.Destroy(parent.gameObject);
-            }
-            _poolParents.Clear();
-        }
-
-        public void ClearPool<T>(T prefab) where T : Component
-        {
-            var key = prefab.gameObject.GetInstanceID();
-            
-            if (_pools.TryGetValue(key, out var pool))
-            {
-                while (pool.Count > 0)
-                {
-                    var obj = pool.Dequeue();
-                    if (obj != null)
-                        Object.Destroy(obj);
-                }
-                _pools.Remove(key);
-            }
-
-            if (_poolParents.TryGetValue(key, out var parent))
-            {
-                if (parent != null)
-                    Object.Destroy(parent.gameObject);
-                _poolParents.Remove(key);
             }
         }
 

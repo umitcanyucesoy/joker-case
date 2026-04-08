@@ -15,11 +15,11 @@ MonoBehaviour:
   sounds:
   - type: 1
     clip: {fileID: 8300000, guid: 8e17cf861990c4eb0baf90ef1377567e, type: 3}
-    volume: 0.304
+    volume: 1
     pitchVariation: 0
   - type: 3
     clip: {fileID: 8300000, guid: 2563bc825e2c749d6ac2dd05fb7f7b3d, type: 3}
-    volume: 0.21
+    volume: 0.088
     pitchVariation: 0
   - type: 4
     clip: {fileID: 8300000, guid: f130905ac5d8e469196d8d1cd79f8bb6, type: 3}

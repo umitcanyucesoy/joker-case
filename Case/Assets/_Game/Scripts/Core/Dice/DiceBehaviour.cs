@@ -13,7 +13,6 @@ namespace Core.Dice
         private int _targetValue;
         private Quaternion _targetRotation;
         private Vector3 _rollAxis;
-
         private bool _groundHitFired;
 
         public int CurrentFaceValue { get; private set; }

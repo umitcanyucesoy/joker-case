@@ -110,6 +110,10 @@ namespace Core.Tokens
             }
 
             _isMoving = false;
+            
+            if (_gridService.TryGetTile(currentCoord, out var tile))
+                Debug.Log($"[TokenController] Landed on Tile #{tile.TileNumber} ({currentCoord})");
+            
             CollectItemOnTile(currentCoord);
             EventBus.Publish(new TokenSequenceCompletedEvent());
         }
