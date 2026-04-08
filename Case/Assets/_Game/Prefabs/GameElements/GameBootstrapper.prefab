@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3470295617471705909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4389942252152872986}
+  - component: {fileID: 6586604367564011205}
+  m_Layer: 0
+  m_Name: GameBootstrapper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4389942252152872986
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3470295617471705909}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6586604367564011205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3470295617471705909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8114131fe2ac487ba2a030bbbf8aae08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Core.Launch.GameBootstrapper
+  currentMapData: {fileID: 11400000, guid: c06f17cb5ee32467e850e3cf1081ae3a, type: 2}
+  tileTypeRegistry: {fileID: 11400000, guid: 89dfcd2709e7a44e58fa1613a4e6ebb7, type: 2}
+  saveData: {fileID: 11400000, guid: c00d5799eb2ed4b82ab52fa5a9ca970c, type: 2}
+  particleData: {fileID: 11400000, guid: d26caf7f95a254c35b05aed2c4021142, type: 2}
+  soundData: {fileID: 11400000, guid: 04d3ffc320f5d44b898dcebc231d2578, type: 2}
+  tokenController: {fileID: 0}
+  uiController: {fileID: 0}
+  cameraController: {fileID: 0}
+  diceController: {fileID: 0}
+  inventoryPanel: {fileID: 0}
+  tileRoot: {fileID: 0}
